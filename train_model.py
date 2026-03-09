@@ -8,19 +8,19 @@ from sklearn.ensemble import RandomForestClassifier
 
 def train_model():
 
-    # Load small dataset
     data = pd.read_csv("adult_small.csv")
 
-    # Clean columns
+    # Clean column names
     data.columns = data.columns.str.strip()
 
-    # Remove missing values
+    # Replace missing values
     data.replace("?", pd.NA, inplace=True)
     data.dropna(inplace=True)
 
-    # Only use features used in the app
+    # Required columns
     features = ["age", "education", "occupation", "hours-per-week"]
 
+    # Select only needed columns
     X = data[features]
     y = data["income"]
 
@@ -33,7 +33,10 @@ def train_model():
         remainder="passthrough"
     )
 
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model = RandomForestClassifier(
+        n_estimators=100,
+        random_state=42
+    )
 
     pipeline = Pipeline([
         ("preprocessor", preprocessor),
