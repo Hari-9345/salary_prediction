@@ -1,54 +1,45 @@
 import pandas as pd
-import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 
-# Load dataset
-data = pd.read_csv("adult.csv")
+def train_model():
 
-# Fix column names
-data.columns = data.columns.str.replace('.', '-', regex=False)
+    data = pd.read_csv("adult.csv")
 
-# Remove missing values
-data.replace(" ?", pd.NA, inplace=True)
-data.dropna(inplace=True)
+    # Fix column names
+    data.columns = data.columns.str.strip()
+    data.columns = data.columns.str.replace(".", "-", regex=False)
 
-# Features and target
-X = data.drop("income", axis=1)
-y = data["income"]
+    # Clean missing values
+    data.replace("?", pd.NA, inplace=True)
+    data.dropna(inplace=True)
 
-# Identify categorical columns
-categorical_cols = X.select_dtypes(include="object").columns
+    X = data.drop("income", axis=1)
+    y = data["income"]
 
-# Preprocessing
-preprocessor = ColumnTransformer(
-    transformers=[
-        ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols)
-    ],
-    remainder="passthrough"
-)
+    categorical_cols = X.select_dtypes(include="object").columns
 
-# Model
-model = RandomForestClassifier(n_estimators=100, random_state=42)
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols)
+        ],
+        remainder="passthrough"
+    )
 
-# Pipeline
-pipeline = Pipeline([
-    ("preprocessor", preprocessor),
-    ("model", model)
-])
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
 
-# Train split
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+    pipeline = Pipeline([
+        ("preprocessor", preprocessor),
+        ("model", model)
+    ])
 
-# Train model
-pipeline.fit(X_train, y_train)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
-# Save model
-joblib.dump(pipeline, "salary_pipeline.pkl")
+    pipeline.fit(X_train, y_train)
 
-print("Model trained and saved successfully!")
+    return pipeline
