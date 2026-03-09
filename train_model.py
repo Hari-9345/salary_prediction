@@ -13,14 +13,13 @@ def train_model():
     # Clean column names
     data.columns = data.columns.str.strip()
 
-    # Replace missing values
+    # Remove missing values
     data.replace("?", pd.NA, inplace=True)
     data.dropna(inplace=True)
 
-    # Required columns
-    features = ["age", "education", "occupation", "hours-per-week"]
+    # Use correct column names from dataset
+    features = ["age", "education", "occupation", "hours.per.week"]
 
-    # Select only needed columns
     X = data[features]
     y = data["income"]
 
@@ -33,10 +32,7 @@ def train_model():
         remainder="passthrough"
     )
 
-    model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42
-    )
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
 
     pipeline = Pipeline([
         ("preprocessor", preprocessor),
