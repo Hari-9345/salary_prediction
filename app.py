@@ -2,12 +2,12 @@ import streamlit as st
 import pandas as pd
 from train_model import train_model
 
-st.set_page_config(page_title="Salary Prediction", layout="wide")
+st.set_page_config(page_title="Salary Prediction App", layout="centered")
 
-st.title("💰 Employee Salary Prediction")
-st.write("Predict whether income is **>50K or <=50K**")
+st.title("Salary Prediction App")
+st.write("Predict whether a person's income is **>50K or <=50K**")
 
-# Train model
+# Load model (trained once and cached)
 @st.cache_resource
 def load_model():
     model = train_model()
@@ -15,19 +15,37 @@ def load_model():
 
 model = load_model()
 
-st.sidebar.header("Input Features")
+st.sidebar.header("Enter Employee Details")
 
 age = st.sidebar.slider("Age", 18, 65, 30)
+
 education = st.sidebar.selectbox(
     "Education",
-    ["Bachelors", "HS-grad", "Masters", "Some-college", "Assoc", "Doctorate"]
+    ["Bachelors", "HS-grad", "Masters", "Some-college", "Assoc-acdm", "Assoc-voc", "Doctorate"]
 )
+
 occupation = st.sidebar.selectbox(
     "Occupation",
-    ["Tech-support", "Craft-repair", "Sales", "Exec-managerial", "Prof-specialty"]
+    [
+        "Tech-support",
+        "Craft-repair",
+        "Other-service",
+        "Sales",
+        "Exec-managerial",
+        "Prof-specialty",
+        "Handlers-cleaners",
+        "Machine-op-inspct",
+        "Adm-clerical",
+        "Farming-fishing",
+        "Transport-moving",
+        "Priv-house-serv",
+        "Protective-serv"
+    ]
 )
-hours_per_week = st.sidebar.slider("Hours per Week", 1, 80, 40)
 
+hours_per_week = st.sidebar.slider("Hours per week", 1, 80, 40)
+
+# Create dataframe for prediction
 input_data = pd.DataFrame({
     "age": [age],
     "education": [education],
@@ -39,11 +57,10 @@ if st.button("Predict Salary"):
 
     prediction = model.predict(input_data)[0]
 
-    if prediction == ">50K":
-        st.success("Predicted Income: >50K 💰")
+    if prediction.strip() == ">50K":
+        st.success(" Predicted Income: >50K")
     else:
-        st.info("Predicted Income: <=50K")
+        st.info(" Predicted Income: <=50K")
 
-st.write(" ")
 st.write("---")
-st.caption("Machine Learning Salary Predictor using Streamlit")
+st.caption("Machine Learning Model deployed with Streamlit")
