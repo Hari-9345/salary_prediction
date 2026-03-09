@@ -7,7 +7,7 @@ from sklearn.pipeline import Pipeline
 
 def train_model():
 
-    data = pd.read_csv("adult.csv")
+    data = pd.read_csv("adult_small.csv")
 
     # Fix column names
     data.columns = data.columns.str.strip()
@@ -43,3 +43,4 @@ def train_model():
     pipeline.fit(X_train, y_train)
 
     return pipeline
+
