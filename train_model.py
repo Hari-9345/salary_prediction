@@ -1,26 +1,30 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.ensemble import RandomForestClassifier
+
 
 def train_model():
 
+    # Load small dataset
     data = pd.read_csv("adult_small.csv")
 
-    # Fix column names
+    # Clean columns
     data.columns = data.columns.str.strip()
-    data.columns = data.columns.str.replace(".", "-", regex=False)
 
-    # Clean missing values
+    # Remove missing values
     data.replace("?", pd.NA, inplace=True)
     data.dropna(inplace=True)
 
-    X = data.drop("income", axis=1)
+    # Only use features used in the app
+    features = ["age", "education", "occupation", "hours-per-week"]
+
+    X = data[features]
     y = data["income"]
 
-    categorical_cols = X.select_dtypes(include="object").columns
+    categorical_cols = ["education", "occupation"]
 
     preprocessor = ColumnTransformer(
         transformers=[
@@ -43,4 +47,3 @@ def train_model():
     pipeline.fit(X_train, y_train)
 
     return pipeline
-
